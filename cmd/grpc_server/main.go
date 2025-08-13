@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const grpcPort = 50051
+const grpcPort = 3000
 
 type server struct {
 	desc.UnimplementedAuthV1Server
