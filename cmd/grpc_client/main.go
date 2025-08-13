@@ -13,7 +13,7 @@ import (
 
 const (
 	address = "localhost:50051"
-	userId  = 12
+	userId  = 2
 )
 
 func main() {
@@ -33,5 +33,5 @@ func main() {
 		log.Fatalf("failed to get user by id: %v", err)
 	}
 
-	log.Printf(color.RedString("Note info:\n"), color.GreenString("%+v", r.GetId()))
+	log.Printf(color.RedString("Auth info:\n"), color.GreenString("%+v", r.GetRole()))
 }

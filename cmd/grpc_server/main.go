@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const grpcPort = 3000
+const grpcPort = 50051
 
 type server struct {
 	desc.UnimplementedAuthV1Server
@@ -23,7 +23,7 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 }
 
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf(": %d", grpcPort))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
