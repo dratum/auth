@@ -16,9 +16,9 @@ service AuthV1 {
     rpc Delete (DeleteRequest) returns (google.protobuf.Empty);
 };
 
-message RoleInfo {
-    google.protobuf.StringValue user = 1;
-    google.protobuf.StringValue admin = 2;    
+enum Role {
+    user = 0;
+    admin = 1;    
 }
 
 message CreateRequest {
@@ -26,25 +26,32 @@ message CreateRequest {
     string email = 2;
     string password = 3;
     string password_confirm = 4;
-    RoleInfo role = 5;
+    Role role = 5;
 }
 
 message CreateResponse {
-
+    int64 id = 1;
 }
 
 message GetRequest {
-
+    int64 id = 1;
 }
 
 message GetResponse {
-
+    int64 id = 1;
+    string name = 2;
+    string email = 3;
+    Role role = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
 }
 
 message UpdateRequest {
-
+    int64 id = 1;
+    google.protobuf.StringValue name = 2;
+    google.protobuf.StringValue email = 3;
 }
 
 message DeleteRequest {
-
+    int64 id = 1;
 }
