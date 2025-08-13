@@ -7,7 +7,7 @@ install-deps:
 
 get-deps:
 	go get -u google.golang.org/protobuf/cmd/protoc-gen-go
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc
+	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 lint:
 	$(LOCAL_BIN)/golangci-lint run ./... --config .golangci.pipeline.yaml
