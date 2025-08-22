@@ -15,6 +15,12 @@ lint:
 generate:
 	make generate-auth-api
 
+build:
+	GOOS=linux GOARCH=amd64 go build -o auth_server_linux cmd/grpc_server/main.go
+	
+copy-to-server:
+	scp auth_server_linux root@87.228.112.110:
+
 generate-auth-api:
 	mkdir -p pkg/auth_v1
 	protoc --proto_path api/auth_v1 \

@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	desc "github.com/olezhek28/microservices_course_boilerplate/pkg/auth_v1"
+	desc "github.com/dratum/auth/pkg/auth_v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
