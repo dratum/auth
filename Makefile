@@ -21,6 +21,11 @@ build:
 copy-to-server:
 	scp auth_server_linux root@87.228.112.110:
 
+docker-build-and-push:
+	docker buildx build --load --no-cache --platform linux/amd64 -t cr.selcloud.ru/dratum/auth-server:v0.0.1 .
+	docker login -u token -p CRgAAAAAJhIxNykYmvnYQ2soVpQDMar2LdaRqpCR cr.selcloud.ru/dratum
+	docker push cr.selcloud.ru/dratum/auth-server:v0.0.1
+
 generate-auth-api:
 	mkdir -p pkg/auth_v1
 	protoc --proto_path api/auth_v1 \
