@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	"github.com/dratum/auth/internal/repository"
+	"github.com/dratum/auth/internal/repository/user/converter"
 	"github.com/dratum/auth/internal/repository/user/model"
 	"github.com/dratum/auth/pkg/auth_v1"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type repo struct {
@@ -54,14 +54,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*auth_v1.GetResponse, error) 
 		return nil, fmt.Errorf("invalid role value from database: %s", roleStr)
 	}
 
-	return &auth_v1.GetResponse{
-		Id:        user.Id,
-		Email:     user.Email,
-		Name:      user.Name,
-		Role:      auth_v1.Role(roleValue),
-		CreatedAt: timestamppb.New(user.CreatedAt),
-		UpdatedAt: timestamppb.New(user.UpdatedAt),
-	}, nil
+	return converter.ToUserFromRepo(&user, roleValue), nil
 }
 
 func (r *repo) Create(ctx context.Context, fields *auth_v1.CreateRequest) (int64, error) {
