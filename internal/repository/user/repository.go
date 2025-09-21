@@ -68,21 +68,35 @@ func (r *repo) Create(ctx context.Context, fields *auth_v1.CreateRequest) (int64
 	}
 
 	query := `
-			  insert name          = $1
-			  	   , email         = $2
-			  	   , password_hash = $3
-			  	   , role          = $4
-			  into users	
-	`
+			  INSERT INTO users
+			  (
+				name
+			  , email
+			  , password_hash
+			  , role
+			  , created_at
+			  , updated_at
+			  ) 
+        	  VALUES (
+			  	$1
+			  , $2
+			  , $3
+			  , $4
+			  , NOW()
+			  , NOW()
+			  )
+        	  RETURNING id
+		`
 
 	var id int64
 
 	err = r.db.QueryRow(
 		ctx,
 		query,
-		fields.Email,
 		fields.Name,
+		fields.Email,
 		hashedPassword,
+		fields.Role,
 	).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create new user: %w", err)
@@ -91,6 +105,6 @@ func (r *repo) Create(ctx context.Context, fields *auth_v1.CreateRequest) (int64
 	return id, nil
 }
 
-func (r *repo) Update(ctx context.Context, id int64) error {}
+// func (r *repo) Update(ctx context.Context, id int64) error {}
 
-func (r *repo) Delete(ctx context.Context, id int64) error {}
+// func (r *repo) Delete(ctx context.Context, id int64) error {}

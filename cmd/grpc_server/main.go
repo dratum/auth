@@ -15,7 +15,7 @@ import (
 )
 
 const grpcPort = 50051
-const dbDSN = "PG_DATABASE_NAME=auth-service"
+const dbDSN = "user=postgres"
 
 type server struct {
 	auth_v1.UnimplementedAuthV1Server
