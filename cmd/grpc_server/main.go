@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"flag"
 	"log"
 	"net"
 
+	"github.com/dratum/auth/internal/config"
 	"github.com/dratum/auth/internal/repository"
 	"github.com/dratum/auth/internal/repository/user"
 	"github.com/dratum/auth/pkg/auth_v1"
@@ -14,8 +15,11 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const grpcPort = 50051
-const dbDSN = "user=postgres"
+var configPath string
+
+func init() {
+	flag.StringVar(&configPath, "config-path", ".env", "path to config file")
+}
 
 type server struct {
 	auth_v1.UnimplementedAuthV1Server
@@ -47,27 +51,45 @@ func (s *server) Create(ctx context.Context, req *auth_v1.CreateRequest) (*auth_
 }
 
 func main() {
+	flag.Parse()
 	ctx := context.Background()
 
-	pool, err := pgxpool.Connect(ctx, dbDSN)
+	err := config.Load(configPath)
 	if err != nil {
-		log.Fatal("Failed to connect database: %w", err)
+		log.Fatalf("failed to load config: %v", err)
+	}
+
+	grpcConfig, err := config.NewGrpcConfig()
+	if err != nil {
+		log.Fatalf("failed to get grpc config: %v", err)
+	}
+
+	pgConfig, err := config.NewPGConfig()
+	if err != nil {
+		log.Fatalf("failed to get postgres config: %v", err)
+	}
+
+	lis, err := net.Listen("tcp", grpcConfig.Address())
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	pool, err := pgxpool.Connect(ctx, pgConfig.DSN())
+	if err != nil {
+		log.Fatalf("Failed to connect database: %v", err)
 	}
 	defer pool.Close()
 
 	usrRepo := user.NewRepository(pool)
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
-	}
 
 	s := grpc.NewServer()
 	reflection.Register(s)
 	auth_v1.RegisterAuthV1Server(s, &server{userRepository: usrRepo})
 
 	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
+
+	err = s.Serve(lis)
+	if err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/dratum/auth/internal/repository"
@@ -48,6 +49,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*auth_v1.GetResponse, error) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
+	log.Print(roleStr)
 
 	roleValue, exists := auth_v1.Role_value[strings.ToUpper(roleStr)]
 	if !exists {
