@@ -1,4 +1,4 @@
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25.1 AS builder
 
 COPY . /github.com/dratum/auth/grpc/source/
 WORKDIR /github.com/dratum/auth/grpc/source/
