@@ -1,4 +1,4 @@
-package user
+package auth
 
 import (
 	"github.com/dratum/auth/internal/repository"
@@ -9,7 +9,7 @@ type serv struct {
 	userRepository repository.UserRepository
 }
 
-func newService(userRepository repository.UserRepository) service.AuthService {
+func NewService(userRepository repository.UserRepository) service.AuthService {
 	return &serv{
 		userRepository: userRepository,
 	}

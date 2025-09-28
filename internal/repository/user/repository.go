@@ -7,9 +7,10 @@ import (
 	"log"
 	"strings"
 
+	"github.com/dratum/auth/internal/model"
 	"github.com/dratum/auth/internal/repository"
 	"github.com/dratum/auth/internal/repository/user/converter"
-	"github.com/dratum/auth/internal/repository/user/model"
+	modelRepo "github.com/dratum/auth/internal/repository/user/model"
 	"github.com/dratum/auth/pkg/auth_v1"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
@@ -23,7 +24,7 @@ func NewRepository(db *pgxpool.Pool) repository.UserRepository {
 	return &repo{db: db}
 }
 
-func (r *repo) Get(ctx context.Context, id int64) (*auth_v1.GetResponse, error) {
+func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 	query := `
 			  select id
 			       , name
@@ -35,7 +36,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*auth_v1.GetResponse, error) 
 			  where u.id = $1
 	`
 
-	var user model.User
+	var user modelRepo.User
 	var roleStr string
 
 	err := r.db.QueryRow(ctx, query, id).Scan(
@@ -59,7 +60,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*auth_v1.GetResponse, error) 
 	return converter.ToUserFromRepo(&user, roleValue), nil
 }
 
-func (r *repo) Create(ctx context.Context, fields *auth_v1.CreateRequest) (int64, error) {
+func (r *repo) Create(ctx context.Context, fields *model.User) (int64, error) {
 	if fields.Password != fields.PasswordConfirm {
 		return 0, errors.New("passwords do not match")
 	}

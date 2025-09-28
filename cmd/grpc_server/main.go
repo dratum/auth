@@ -10,6 +10,7 @@ import (
 	"github.com/dratum/auth/internal/converter"
 	"github.com/dratum/auth/internal/repository/user"
 	"github.com/dratum/auth/internal/service"
+	"github.com/dratum/auth/internal/service/auth"
 	"github.com/dratum/auth/pkg/auth_v1"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
@@ -82,10 +83,11 @@ func main() {
 	defer pool.Close()
 
 	usrRepo := user.NewRepository(pool)
+	authServ := auth.NewService(usrRepo)
 
 	s := grpc.NewServer()
 	reflection.Register(s)
-	auth_v1.RegisterAuthV1Server(s, &server{userRepository: usrRepo})
+	auth_v1.RegisterAuthV1Server(s, &server{authService: authServ})
 
 	log.Printf("server listening at %v", lis.Addr())
 
