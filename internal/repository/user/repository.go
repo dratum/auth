@@ -50,7 +50,7 @@ func (r *repo) Get(ctx context.Context, id int64) (*auth_v1.GetResponse, error) 
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	log.Print(roleStr)
-
+	//TODO: Проблемы с определением роли при запроса GET
 	roleValue, exists := auth_v1.Role_value[strings.ToUpper(roleStr)]
 	if !exists {
 		return nil, fmt.Errorf("invalid role value from database: %s", roleStr)

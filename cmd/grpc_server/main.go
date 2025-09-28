@@ -7,8 +7,9 @@ import (
 	"net"
 
 	"github.com/dratum/auth/internal/config"
-	"github.com/dratum/auth/internal/repository"
+	"github.com/dratum/auth/internal/converter"
 	"github.com/dratum/auth/internal/repository/user"
+	"github.com/dratum/auth/internal/service"
 	"github.com/dratum/auth/pkg/auth_v1"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
@@ -23,11 +24,22 @@ func init() {
 
 type server struct {
 	auth_v1.UnimplementedAuthV1Server
-	userRepository repository.UserRepository
+	authService service.AuthService
+}
+
+func (s *server) Create(ctx context.Context, req *auth_v1.CreateRequest) (*auth_v1.CreateResponse, error) {
+	id, err := s.authService.Create(ctx, converter.ToUserFromAuth(req))
+	if err != nil {
+		return nil, err
+	}
+
+	return &auth_v1.CreateResponse{
+		Id: id,
+	}, nil
 }
 
 func (s *server) Get(ctx context.Context, req *auth_v1.GetRequest) (*auth_v1.GetResponse, error) {
-	user, err := s.userRepository.Get(ctx, req.Id)
+	user, err := s.authService.Get(ctx, req.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -36,17 +48,6 @@ func (s *server) Get(ctx context.Context, req *auth_v1.GetRequest) (*auth_v1.Get
 		Id:    user.Id,
 		Name:  user.Name,
 		Email: user.Email,
-	}, nil
-}
-
-func (s *server) Create(ctx context.Context, req *auth_v1.CreateRequest) (*auth_v1.CreateResponse, error) {
-	id, err := s.userRepository.Create(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	return &auth_v1.CreateResponse{
-		Id: id,
 	}, nil
 }
 

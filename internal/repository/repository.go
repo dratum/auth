@@ -3,12 +3,12 @@ package repository
 import (
 	"context"
 
-	"github.com/dratum/auth/pkg/auth_v1"
+	"github.com/dratum/auth/internal/model"
 )
 
 type UserRepository interface {
-	Get(ctx context.Context, id int64) (*auth_v1.GetResponse, error)
-	Create(ctx context.Context, fields *auth_v1.CreateRequest) (int64, error)
+	Get(ctx context.Context, id int64) (*model.User, error)
+	Create(ctx context.Context, fields *model.User) (int64, error)
 	// Update(ctx context.Context, id int64) error
 	// Delete(ctx context.Context, id int64) error
 }

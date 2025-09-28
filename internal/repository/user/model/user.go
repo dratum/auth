@@ -1,4 +1,4 @@
-package model
+package modelRepo
 
 import (
 	"database/sql"
