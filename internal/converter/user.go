@@ -24,8 +24,10 @@ func ToUserFromService(user *model.User, role int32) *auth_v1.GetResponse {
 
 func ToUserFromAuth(user *auth_v1.CreateRequest) *model.User {
 	return &model.User{
-		Name:  user.Name,
-		Email: user.Email,
-		Role:  user.Role.Enum().String(),
+		Name:            user.Name,
+		Email:           user.Email,
+		Password:        user.Password,
+		PasswordConfirm: user.PasswordConfirm,
+		Role:            user.Role.Enum().String(),
 	}
 }

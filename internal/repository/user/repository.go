@@ -51,6 +51,10 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 }
 
 func (r *repo) Create(ctx context.Context, fields *model.User) (int64, error) {
+	if len(fields.Password) == 0 {
+		return 0, errors.New("passwords not input")
+	}
+
 	if fields.Password != fields.PasswordConfirm {
 		return 0, errors.New("passwords do not match")
 	}
