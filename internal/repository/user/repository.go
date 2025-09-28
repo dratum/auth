@@ -4,14 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
-	"strings"
 
 	"github.com/dratum/auth/internal/model"
 	"github.com/dratum/auth/internal/repository"
 	"github.com/dratum/auth/internal/repository/user/converter"
 	modelRepo "github.com/dratum/auth/internal/repository/user/model"
-	"github.com/dratum/auth/pkg/auth_v1"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,27 +34,20 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 	`
 
 	var user modelRepo.User
-	var roleStr string
 
 	err := r.db.QueryRow(ctx, query, id).Scan(
 		&user.Id,
 		&user.Email,
 		&user.Name,
-		&roleStr,
+		&user.Role,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
-	log.Print(roleStr)
-	//TODO: Проблемы с определением роли при запроса GET
-	roleValue, exists := auth_v1.Role_value[strings.ToUpper(roleStr)]
-	if !exists {
-		return nil, fmt.Errorf("invalid role value from database: %s", roleStr)
-	}
 
-	return converter.ToUserFromRepo(&user, roleValue), nil
+	return converter.ToUserFromRepo(&user), nil
 }
 
 func (r *repo) Create(ctx context.Context, fields *model.User) (int64, error) {

@@ -5,7 +5,7 @@ import (
 	modelRepo "github.com/dratum/auth/internal/repository/user/model"
 )
 
-func ToUserFromRepo(user *modelRepo.User, role int32) *model.User {
+func ToUserFromRepo(user *modelRepo.User) *model.User {
 	return &model.User{
 		Id:        user.Id,
 		Name:      user.Name,

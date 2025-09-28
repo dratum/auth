@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net"
 
@@ -44,12 +45,11 @@ func (s *server) Get(ctx context.Context, req *auth_v1.GetRequest) (*auth_v1.Get
 	if err != nil {
 		return nil, err
 	}
-
-	return &auth_v1.GetResponse{
-		Id:    user.Id,
-		Name:  user.Name,
-		Email: user.Email,
-	}, nil
+	roleValue, exists := auth_v1.Role_value[user.Role]
+	if !exists {
+		return nil, fmt.Errorf("invalid role value from database: %s", user.Role)
+	}
+	return converter.ToUserFromService(user, roleValue), nil
 }
 
 func main() {
