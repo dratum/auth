@@ -36,7 +36,7 @@ func New(sig ...os.Signal) *Closer {
 			signal.Notify(ch, sig...)
 			<-ch
 			signal.Stop(ch)
-			c.CloseAll
+			c.CloseAll()
 		}()
 	}
 
