@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/dratum/auth/internal/model"
 	"github.com/dratum/auth/internal/repository"
@@ -103,12 +104,31 @@ func (r *repo) Create(ctx context.Context, fields *model.User) (int64, error) {
 	return id, nil
 }
 
-func (r *repo) Update(ctx context.Context, id int64, opts ...map[string]string) error {
-	log.Println(id, opts)
-	// query := `
-	// 		update users
-	// 		where users.id = @id
-	// `
+func (r *repo) Update(ctx context.Context, fields *model.UserUpdate) error {
+	log.Println(fields)
+
+	query := `
+			update users
+			set   name  = COALESCE($2, name)
+				, email = COALESCE($3, email)
+				, updated_at = $4
+			where users.id = $1
+	`
+
+	result, err := r.db.Exec(ctx, query,
+		fields.Id,
+		fields.Name,
+		fields.Email,
+		time.Now(),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("user with id %d not found", fields.Id)
+	}
+
 	return nil
 }
 
@@ -117,6 +137,7 @@ func (r *repo) Delete(ctx context.Context, id int64) error {
 		delete from users
 		where id = $1
 	`
+
 	_, err := r.db.Exec(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)

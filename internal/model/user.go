@@ -15,3 +15,11 @@ type User struct {
 	CreatedAt       time.Time
 	UpdatedAt       sql.NullTime
 }
+
+type UserUpdate struct {
+	Id        int64
+	Name      *string
+	Email     *string
+	CreatedAt time.Time
+	UpdatedAt sql.NullTime
+}

@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Server) Create(ctx context.Context, req *auth_v1.CreateRequest) (*auth_v1.CreateResponse, error) {
-	id, err := s.authService.Create(ctx, converter.ToUserFromAuth(req))
+	id, err := s.authService.Create(ctx, converter.ToCreateFromAuth(req))
 	if err != nil {
 		return nil, err
 	}

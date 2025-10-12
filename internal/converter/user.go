@@ -22,7 +22,7 @@ func ToUserFromService(user *model.User, role int32) *auth_v1.GetResponse {
 	}
 }
 
-func ToUserFromAuth(user *auth_v1.CreateRequest) *model.User {
+func ToCreateFromAuth(user *auth_v1.CreateRequest) *model.User {
 	return &model.User{
 		Name:            user.Name,
 		Email:           user.Email,
@@ -30,4 +30,22 @@ func ToUserFromAuth(user *auth_v1.CreateRequest) *model.User {
 		PasswordConfirm: user.PasswordConfirm,
 		Role:            user.Role.Enum().String(),
 	}
+}
+
+func ToUpdateFromAuth(user *auth_v1.UpdateRequest) *model.UserUpdate {
+	result := &model.UserUpdate{
+		Id: user.Id,
+	}
+
+	// Проверяем, задано ли поле name
+	if user.Name != nil {
+		result.Name = &user.Name.Value
+	}
+
+	// Проверяем, задано ли поле email
+	if user.Email != nil {
+		result.Email = &user.Email.Value
+	}
+
+	return result
 }
